@@ -1,6 +1,7 @@
 package com.del.android.rgb;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -10,19 +11,18 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.del.android.rgb.Draw;
-//import com.del.android.scope.R;
+import com.larswerkman.holocolorpicker.*;
+import com.larswerkman.holocolorpicker.ColorPicker.OnColorChangedListener;
 
 
 public class mainActivity extends Activity
 {
 	//Debugging
 	private static final String TAG = "RGBController";
-	private static final boolean D = false;
+	private static final boolean D = true;
 	
     // Layout Views
     private TextView mTitle;
-	private Draw mDraw; 
     private Handler HandlerDraw; //handler do komunikacji z klasa draw
 	
 
@@ -47,13 +47,46 @@ public class mainActivity extends Activity
         mTitle.setText(R.string.app_name);
         mTitle = (TextView) findViewById(R.id.title_right_text);
         
-        mDraw = (Draw) findViewById(R.id.draw);
-        HandlerDraw=mDraw.mHandler;
-        mDraw.mainActivityHandler=mHandler;
-           
+        ColorPicker picker = (ColorPicker) findViewById(R.id.picker);
+        SVBar svBar = (SVBar) findViewById(R.id.svbar);
+        OpacityBar opacityBar = (OpacityBar) findViewById(R.id.opacitybar);
+        SaturationBar saturationBar = (SaturationBar) findViewById(R.id.saturationbar);
+        ValueBar valueBar = (ValueBar) findViewById(R.id.valuebar);
+
+        picker.addSVBar(svBar);
+        picker.addOpacityBar(opacityBar);
+        picker.addSaturationBar(saturationBar);
+        picker.addValueBar(valueBar);
+
+        //To get the color
+        picker.getColor();
+
+        //To set the old selected color u can do it like this
+        picker.setOldCenterColor(picker.getColor());
+        // adds listener to the colorpicker which is implemented
+        //in the activity
+        picker.setOnColorChangedListener( OnColorChanged );
+
+        //to turn of showing the old color
+        picker.setShowOldCenterColor(false);
+
         
         if(D) Log.e(TAG, "-- ON CREATE --");
     }
+    
+    public class OnColorChangedClass implements OnColorChangedListener
+    {
+    	public void onColorChanged(int color)
+		{
+			Log.e( TAG, "R: "+ Color.red( color ) );
+			Log.e( TAG, "G: "+ Color.green( color ) );
+			Log.e( TAG, "B: "+ Color.blue( color ) );
+			Log.e( TAG, "A: "+ Color.alpha( color ) );
+		}
+    }
+    
+    OnColorChangedClass OnColorChanged = new OnColorChangedClass();
+    
     
     private final Handler mHandler = new Handler() 
     {

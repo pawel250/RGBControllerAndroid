@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="select_device">Wybierz urzadzenie</string>
-    <string name="app_name">ARMscope1.4</string>
+    <string name="app_name">RGBController</string>
      <string name="bt_not_enabled_leaving">BT nie zostal wlaczony.\nAplikacja zostanie zamknieta.</string>
      <string name="bt_not_available">Modul BT nie dostepny.</string>
 
@@ -19,85 +19,7 @@
     <string name="title_not_connected">Nie polaczony</string>
     <string name="unable_to_allocate">Alokacja pamieci nie udana</string>
     <string name="ground">Masa</string>
-       
-    
-    <string name="timeDivString">Time Div</string>
-     <string-array name="timeDivArray">
-        <item>1us</item>
-        <item>2us</item>
-        <item>5us</item>
-        <item>10us</item>
-        <item>20us</item>
-        <item>50us</item>
-        <item>100us</item>
-        <item>200us</item>
-        <item>500us</item>
-        <item>1ms</item>
-        <item>2ms</item>
-        <item>5ms</item>
-        <item>10ms</item>
-        <item>20ms</item>
-        <item>50ms</item>
-    </string-array>
-    
-     <string name="voltDivString">Volt Div</string>
-     <string-array name="voltDivArray">
-        <item>10mV</item>
-        <item>20mV</item>
-        <item>50mV</item>
-        <item>100mV</item>
-        <item>200mV</item>
-        <item>500mV</item>
-        <item>1V</item>
-        <item>2V</item>
-        <item>5V</item>
-    </string-array>
-    
-    <string name="runString">Start</string>
-    <string name="stopString">Zatrzymaj</string>
-    
-     <string name="fallingTriggerString">Opadajace</string>
-    <string name="risingTriggerString">Rosnace</string>
-    
-    <string name="autoTriggerString">Automatyczny</string>  
-    <string name="singleTriggerString">Pojedynczy</string>
-    
-    <string name="connect">Polacz</string>
-    <string name="saveToFileString">Zapisz do pliku</string>  
-    <string name="calibrationString">Kalibracja</string>
-    <string name="preferencesString">Ustawienia</string>  
-    
-    <string name="singleMemoryLenghtString">Pamiec trybu pojedynczego</string>
-    <string name="singleMemoryLenghtDescString">Dlugosc pamieci trybu pojedynczego</string>  
-  	<string name="autoMemoryLenghtString">Pamiec trybu automatycznego</string>
-    <string name="autoMemoryLenghtDescString">Dlugosc pamieci trybu automatycznego</string>  
-    
-    <string name="memoryPreferencesString">Ustawienia pamieci</string>  
-    <string name="drawPreferencesString">Ustawienia rysowania</string> 
-    <string name="antiAliasOffString">AntiAliasing wylaczony</string> 
-    <string name="antiAliasOnString">AntiAliasing wlaczony</string> 
-    <string name="lineInterPolString">Interpolacja liniowa</string> 
-    <string name="interPolOnString">Interpolacja wlaczona</string>  
-    <string name="interPolOffString">Interpolacja wylaczona</string> 
-     <string name="averageTitleString">Usrednianie wykresu</string> 
-    <string name="averageSummaryString">Ilosc probek poddanych usrednianiu</string>  
-    
-    <string name="endMarkerNotFound">Nie znaleziono znacznika konca</string>
- 
-	 <string name="inputChannelPreferencesString">Ustawienia kanalu wejsciowego</string>
-	 <string name="constantComponentString">Skladowa stala</string>
-	 <string name="condensatorConnString">Kondensator wejsciowy podlaczony</string>
-	 <string name="condensatorUnconnString">Kondensator wejsciowy zwarty</string>
-	 <string name="inputPolarizationString">Polaryzacja wejscia</string>
-	 <string name="inputPolOffString">Polaryzacja wylaczona</string>
-	 <string name="inputPolOnString">Polaryzacja polowa zakresu probkowania</string>
-	 
-	 <string name="delayString">Dlugosc opoznienia w [ms]</string>
-	 <string name="delayDescString">Wpisz 0 aby wlaczyc transmisje z potwierdzeniem</string>
-	 
-	  <string name="squareGeneratorString">Generator testowy 1kHz/3.3V</string>
-	 <string name="generatorOffString">Generator wylaczony</string>
-	 <string name="generatorOnString">Generator wlaczony</string>
+
 	     
      
 </resources>
