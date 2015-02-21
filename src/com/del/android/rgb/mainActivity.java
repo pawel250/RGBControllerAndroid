@@ -2,6 +2,7 @@ package com.del.android.rgb;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ToggleButton;
 
+import com.del.android.scope.R;
 import com.larswerkman.holocolorpicker.*;
 import com.larswerkman.holocolorpicker.ColorPicker.OnColorChangedListener;
 import com.larswerkman.holocolorpicker.ColorPicker.channels;
@@ -268,6 +270,9 @@ public class mainActivity extends Activity
 		{
 			if(D) Log.d(TAG, "sendButtonListener" );
 			buildTxFrame();
+	    	if(mConnectedDeviceName!=null) mBTSerialService.write(buff);
+	    	else  Toast.makeText(getApplicationContext(), R.string.title_not_connected,Toast.LENGTH_SHORT).show();
+	    	
 			if(D) 
 			{
 				for( int i = 0; i < FRAME_SIZE; i++ )
@@ -275,29 +280,100 @@ public class mainActivity extends Activity
 			}
 		}
 	};
+	
+	public static final int MESSAGE_STATE_CHANGE = 1;
+	public static final int MESSAGE_READ = 2;
+    public static final int MESSAGE_DEVICE_NAME = 4;
+	public static final int MESSAGE_TOAST = 5;
+
+    // Key names received from the BluetoothChatService Handler
+    public static final String DEVICE_NAME = "device_name";
+    public static final String TOAST = "toast";
+    // Name of the connected device
+    private String mConnectedDeviceName = null;
     
-    private final static Handler mHandler = new Handler() 
+    private final Handler mHandler = new Handler() 
     {
         @Override
         public void handleMessage(Message msg)
         {
         	switch (msg.what)
         	{
-                
-            case 0:
+            case MESSAGE_STATE_CHANGE:
+                if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+                switch (msg.arg1)
+                {
+                case BluetoothSerialService.STATE_CONNECTED:
+                    mTitle.setText(R.string.title_connected_to);
+                    mTitle.append(mConnectedDeviceName);
+                    break;
+                case BluetoothSerialService.STATE_CONNECTING:
+                    mTitle.setText(R.string.title_connecting);
+                    break;
+                case BluetoothSerialService.STATE_NONE:
+                    mTitle.setText(R.string.title_not_connected);
+                    break;
+                }
+                break;
+            case MESSAGE_DEVICE_NAME:
                 // save the connected device's name
-        
+                mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
+                Toast.makeText(getApplicationContext(),getText(R.string.title_connected_to)
+                		+ mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                 break;
-            case 1:
-                
+            case MESSAGE_TOAST:
+                Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
+                               Toast.LENGTH_SHORT).show();
                 break;
-            case 2:
-            	 if(D) Log.i(TAG, "MESSAGE_PARAM_CHANGED: " + msg.arg1);
-                 
-            	break;
             }
         }
     };
+    
+    private void setup()
+    {
+        Log.d(TAG, "setup()");
+        // Initialize the BluetoothChatService to perform bluetooth connections
+        mBTSerialService = new BluetoothSerialService(this, mHandler);     
+        
+        Intent serverIntent = new Intent(this, DeviceListActivity.class);
+        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+    }
+    
+	// Intent request codes
+    private static final int REQUEST_CONNECT_DEVICE = 1;
+    private static final int REQUEST_ENABLE_BT = 2;
+    
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(D) Log.d(TAG, "onActivityResult " + resultCode);
+        switch (requestCode) 
+        {
+        case REQUEST_CONNECT_DEVICE:
+            // When DeviceListActivity returns with a device to connect
+            if (resultCode == Activity.RESULT_OK) {
+                // Get the device MAC address
+                String address = data.getExtras()
+                                     .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                // Get the BLuetoothDevice object
+                BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+                // Attempt to connect to the device
+                mBTSerialService.connect(device);
+            }
+            break;
+        case REQUEST_ENABLE_BT:
+            // When the request to enable Bluetooth returns
+            if (resultCode == Activity.RESULT_OK)
+            { 
+                setup();
+            } 
+            else 
+            {// User did not enable Bluetooth or an error occured
+                Log.d(TAG, "BT not enabled");
+                Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }
+    }
     
     public void onStart()
     {
@@ -326,6 +402,7 @@ public class mainActivity extends Activity
     @Override
     public void onStop() {
         super.onStop();
+        if (mBTSerialService != null) mBTSerialService.stop();
         if(D) Log.e(TAG, "-- ON STOP --");
     }
 

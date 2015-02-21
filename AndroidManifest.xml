@@ -16,6 +16,9 @@
             </intent-filter>
         </activity>
  
+ 	<activity android:name="com.del.android.rgb.DeviceListActivity"
+                  android:label="@string/select_device"
+                  android:theme="@android:style/Theme.Dialog" />
         
     </application>
     <uses-sdk android:minSdkVersion="7" />

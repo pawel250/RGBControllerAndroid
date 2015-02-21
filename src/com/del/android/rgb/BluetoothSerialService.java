@@ -20,7 +20,7 @@ import android.util.Log;
 
 public class BluetoothSerialService 
 {
-	private static final String TAG = "ARMscope";
+	private static final String TAG = "RGBController";
     private static final boolean D = false;
     // Unique UUID for this application
     private static final UUID SerialPortServiceClass_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -53,7 +53,7 @@ public class BluetoothSerialService
 	    /**
 	     * Start the chat service. Specifically start AcceptThread to begin a
 	     * session in listening (server) mode. Called by the Activity onResume() */
-	 public synchronized void start() 
+	 public synchronized void start()
 	 {
 	        if (D) Log.d(TAG, "start");
 
