@@ -1,6 +1,8 @@
 package com.del.android.rgb;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ToggleButton;
 
@@ -36,9 +39,13 @@ public class mainActivity extends Activity
     EditText redEditText;
     EditText greenEditText;
     EditText blueEditText;
-    
     Button sendButton;
-
+    ToggleButton powerButton;
+    
+    private BluetoothAdapter mBluetoothAdapter = null;
+ // Member object for the BT services
+    private BluetoothSerialService mBTSerialService = null;
+    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -82,8 +89,7 @@ public class mainActivity extends Activity
 			ch1Button.setText( R.string.ch2String );
 		}
 		
-        ToggleButton powerButton = (ToggleButton) findViewById(R.id.powerButton);
-        powerButton.setOnClickListener(powerButtonListener);
+        powerButton = (ToggleButton) findViewById(R.id.powerButton);
         
         redEditText = (EditText) findViewById(R.id.redValueTextEdit);
         redEditText.setOnEditorActionListener(redEditTextListener);
@@ -97,17 +103,26 @@ public class mainActivity extends Activity
         sendButton = (Button) findViewById(R.id.sendButton);
         sendButton.setOnClickListener(sendButtonListener);
         
+        // Get local Bluetooth adapter
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        // If the adapter is null, then Bluetooth is not supported
+        if (mBluetoothAdapter == null) 
+        {
+            Toast.makeText(this, R.string.bt_not_available, Toast.LENGTH_LONG).show();
+            if(D) Log.e(TAG, "Bluetooth is not available");
+            finish();
+            return;
+        }
+        
         if(D) Log.e(TAG, "-- ON CREATE --");
     }
     
     public class OnColorChangedCh1Class implements OnColorChangedListener
     {
     	public void onColorChanged(int color)
-		{
-    		//int pickedColor = picker.getColor();
-    		
+		{    		
     		Log.e( TAG, "1:"+ Color.red( color ) + "x"+ Color.green( color ) + "x"+ Color.blue( color ) /*+ ""+ Color.alpha( color ) */);
-    		
+    		updateColorEditText(color);
 		}
     }
     OnColorChangedCh1Class OnColorChangedCh1 = new OnColorChangedCh1Class();
@@ -115,33 +130,21 @@ public class mainActivity extends Activity
     public class OnColorChangedCh2Class implements OnColorChangedListener
     {
     	public void onColorChanged(int color)
-		{
-    		//int pickedColor = picker.getColor();
-    		
+		{    		
 			Log.e( TAG, "2:"+ Color.red( color ) + "x"+ Color.green( color ) + "x"+ Color.blue( color ) /*+ ""+ Color.alpha( color ) */);
-			//Log.d( TAG, "pickedColor2: " + pickedColor );
+			updateColorEditText(color);
     		
 		}
     }
     OnColorChangedCh2Class OnColorChangedCh2 = new OnColorChangedCh2Class();
     
-    private OnClickListener powerButtonListener = new OnClickListener()
-	{
-		public void onClick(View arg0) 
-		{
-			ToggleButton powerButton = (ToggleButton) arg0;
-			if(D) Log.d(TAG,"powerButtonListener"+ powerButton.isChecked());
-			
-			if( powerButton.isChecked() )
-			{
-				//picker.activeChannel = 2;
-			}
-			else
-			{
-				//picker.activeChannel = 1;
-			}
-		}
-	};
+    private void updateColorEditText( int color)
+    {
+    	int pickedColor = picker.getCenterColor();
+    	redEditText.setText( String.valueOf( Color.red(pickedColor) ) );
+    	greenEditText.setText( String.valueOf( Color.green(pickedColor) ) );
+    	blueEditText.setText( String.valueOf( Color.blue(pickedColor) ) );
+    }
     
     private OnClickListener ch1ButtonListener = new OnClickListener()
 	{
@@ -153,17 +156,17 @@ public class mainActivity extends Activity
 			if( picker.getActiveChannel() == channels.CH1 )
 			{
 				picker.setActiveChannel(channels.CH2);
-				picker.invalidate();
-				picker.setColor( picker.getCenterColor() );
-				//picker.setColor(-65000);
+				int color = picker.getCenterColor();
+				picker.setColor( color );
+	    		updateColorEditText( color );
 				ch1Button.setText( R.string.ch2String );
 			}
 			else
 			{
 				picker.setActiveChannel(channels.CH1);
-				picker.invalidate();
-				picker.setColor( picker.getCenterColor() );
-				//picker.setColor(-25000);
+				int color = picker.getCenterColor();
+				picker.setColor( color );
+	    		updateColorEditText( color );
 				ch1Button.setText( R.string.ch1String );
 			}
 		}
@@ -174,7 +177,19 @@ public class mainActivity extends Activity
 		@Override
 		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 			if(D) Log.d(TAG,"redEditTextListener"+ redEditText.getText() );
-			//picker.setCh1CenterColor( picker.getCh2Color() );
+			 int centerCol = picker.getCenterColor();
+			 int modifiedCol = Integer.valueOf( redEditText.getText().toString() );
+			 if( modifiedCol > 255 )
+			 {
+				 modifiedCol = 255;
+				 redEditText.setText("255");
+			 }
+			 else if( modifiedCol < 0 )
+			 {
+				 modifiedCol = 0;
+				 redEditText.setText("0");
+			 }
+			 picker.setColor( Color.rgb( modifiedCol, Color.green(centerCol), Color.blue(centerCol)));
 			return true;
 		}
 	};
@@ -183,6 +198,19 @@ public class mainActivity extends Activity
 		@Override
 		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 			if(D) Log.d(TAG,"greenEditTextListener"+ greenEditText.getText() );
+			 int centerCol = picker.getCenterColor();
+			 int modifiedCol = Integer.valueOf( greenEditText.getText().toString() );
+			 if( modifiedCol > 255 )
+			 {
+				 modifiedCol = 255;
+				 greenEditText.setText("255");
+			 }
+			 else if( modifiedCol < 0 )
+			 {
+				 modifiedCol = 0;
+				 greenEditText.setText("0");
+			 }
+			 picker.setColor( Color.rgb( Color.red(centerCol), modifiedCol, Color.blue(centerCol)));
 			return true;
 		}
 	};
@@ -191,15 +219,60 @@ public class mainActivity extends Activity
 		@Override
 		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 			if(D) Log.d(TAG,"blueEditTextListener"+ blueEditText.getText() );
+			 int centerCol = picker.getCenterColor();
+			 int modifiedCol = Integer.valueOf( blueEditText.getText().toString() );
+			 if( modifiedCol > 255 )
+			 {
+				 modifiedCol = 255;
+				 blueEditText.setText("255");
+			 }
+			 else if( modifiedCol < 0 )
+			 {
+				 modifiedCol = 0;
+				 blueEditText.setText("0");
+			 }
+			 picker.setColor( Color.rgb( Color.red(centerCol), Color.green(centerCol), modifiedCol));
 			return true;
 		}
 	};
 	
+	private final int FRAME_SIZE = 8;
+	private byte buff[] = new byte[FRAME_SIZE];
+	private final byte FRAME_START_MARKER = 1;
+	private final byte FRAME_END_MARKER = FRAME_START_MARKER + 2;
+	
+	private void buildTxFrame()
+	{
+		int ch1Color = picker.getCh1CenterColor();
+		int ch2Color = picker.getCh2CenterColor();
+		
+		if( ! powerButton.isChecked() )
+		{
+			ch1Color = 0;
+			ch2Color = 0;
+		}
+		
+		buff[0] = FRAME_START_MARKER;
+		buff[1] = (byte) Color.red( ch1Color );
+		buff[2] = (byte) Color.green( ch1Color );
+		buff[3] = (byte) Color.blue( ch1Color );
+		buff[4] = (byte) Color.red( ch2Color );
+		buff[5] = (byte) Color.green( ch2Color );
+		buff[6] = (byte) Color.blue( ch2Color );
+		buff[7] = FRAME_END_MARKER;
+	}
+	
 	private OnClickListener sendButtonListener = new OnClickListener()
 	{
-		public void onClick(View arg0) 
+		public void onClick(View arg0)
 		{
-			if(D) Log.d(TAG,"sendButtonListener" );
+			if(D) Log.d(TAG, "sendButtonListener" );
+			buildTxFrame();
+			if(D) 
+			{
+				for( int i = 0; i < FRAME_SIZE; i++ )
+					Log.d(TAG, i+": "+buff[i] );
+			}
 		}
 	};
     
@@ -231,6 +304,16 @@ public class mainActivity extends Activity
         super.onStart();
         if(D) Log.e(TAG, "++ ON START ++");
         
+        if (!mBluetoothAdapter.isEnabled())
+        {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        // Otherwise, setup the session
+        } 
+        else
+        {
+           if (mBTSerialService == null) setup();
+        }
     }
 
     

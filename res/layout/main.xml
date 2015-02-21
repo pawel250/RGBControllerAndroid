@@ -30,8 +30,7 @@
 	        android:layout_height="wrap_content"
 	        android:inputType="numberDecimal"
 	        android:maxWidth="50sp"
-	        android:minWidth="50sp"
-	        android:text="255" />
+	        android:minWidth="50sp" />
 	    <TextView
 	        android:id="@+id/greenTextView"
 	        android:layout_width="wrap_content"
@@ -43,8 +42,7 @@
 	        android:layout_height="wrap_content"
 	        android:inputType="numberDecimal"
 	        android:maxWidth="50sp"
-	        android:minWidth="50sp"
-	        android:text="255" />
+	        android:minWidth="50sp" />
 	    <TextView
 	        android:id="@+id/blueTextView"
 	        android:layout_width="wrap_content"
@@ -57,8 +55,7 @@
 	        android:layout_height="wrap_content"
 	        android:inputType="numberDecimal"
 	        android:maxWidth="50sp"
-	        android:minWidth="50sp"
-	        android:text="255" />
+	        android:minWidth="50sp" />
 	    
 	    <ToggleButton
 	        android:id="@+id/ch1Button"
