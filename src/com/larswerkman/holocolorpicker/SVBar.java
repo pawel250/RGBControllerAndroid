@@ -351,7 +351,6 @@ public class SVBar extends View {
 					mBarPointerPaint.setColor(mColor);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
 					}
 					invalidate();
 				} else if (dimen < mBarPointerHaloRadius) {
@@ -360,7 +359,6 @@ public class SVBar extends View {
 					mBarPointerPaint.setColor(mColor);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
 					}
 					invalidate();
 				} else if (dimen > (mBarPointerHaloRadius + mBarLength)) {
@@ -369,7 +367,6 @@ public class SVBar extends View {
 					mBarPointerPaint.setColor(mColor);
 					if (mPicker != null) {
 						mPicker.setNewCenterColor(mColor);
-						mPicker.changeOpacityBarColor(mColor);
 					}
 					invalidate();
 				}
@@ -397,7 +394,6 @@ public class SVBar extends View {
 		// wheel
 		if (mPicker != null) {
 			mPicker.setNewCenterColor(mColor);
-			mPicker.changeOpacityBarColor(mColor);
 		}
 		invalidate();
 	}
@@ -417,7 +413,6 @@ public class SVBar extends View {
 		// wheel
 		if (mPicker != null) {
 			mPicker.setNewCenterColor(mColor);
-			mPicker.changeOpacityBarColor(mColor);
 		}
 		invalidate();
 	}
@@ -448,8 +443,6 @@ public class SVBar extends View {
 		mBarPointerPaint.setColor(mColor);
 		if (mPicker != null) {
 			mPicker.setNewCenterColor(mColor);
-			if(mPicker.hasOpacityBar())
-				mPicker.changeOpacityBarColor(mColor);
 		}
 		invalidate();
 	}

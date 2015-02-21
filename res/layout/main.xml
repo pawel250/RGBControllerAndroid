@@ -1,36 +1,91 @@
-<?xml version="1.0" encoding="UTF-8"?><LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 	
 	<com.larswerkman.holocolorpicker.ColorPicker
     android:id="@+id/picker"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>
-	
-	<com.larswerkman.holocolorpicker.SVBar
-    android:id="@+id/svbar"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
-	
-	<com.larswerkman.holocolorpicker.OpacityBar
-    android:id="@+id/opacitybar"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
-	
-	<com.larswerkman.holocolorpicker.SaturationBar
-    android:id="@+id/saturationbar"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
-	
-	<com.larswerkman.holocolorpicker.ValueBar
-    android:id="@+id/valuebar"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
-	
-	
-	
 
-	
+	<com.larswerkman.holocolorpicker.SVBar
+	    android:id="@+id/svbar"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" />
+
+	<LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal" >
+	    
+	    <TextView
+	        android:id="@+id/redTextView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/rString" />
+	    <EditText
+	        android:id="@+id/redValueTextEdit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:inputType="numberDecimal"
+	        android:maxWidth="50sp"
+	        android:minWidth="50sp"
+	        android:text="255" />
+	    <TextView
+	        android:id="@+id/greenTextView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/gString" />
+	    <EditText
+	        android:id="@+id/greenValueTextEdit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:inputType="numberDecimal"
+	        android:maxWidth="50sp"
+	        android:minWidth="50sp"
+	        android:text="255" />
+	    <TextView
+	        android:id="@+id/blueTextView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/bString" />
+
+	    <EditText
+	        android:id="@+id/blueValueTextEdit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:inputType="numberDecimal"
+	        android:maxWidth="50sp"
+	        android:minWidth="50sp"
+	        android:text="255" />
+	    
+	    <ToggleButton
+	        android:id="@+id/ch1Button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="14dp"
+	        android:textOff="@string/ch1String"
+	        android:textOn="@string/ch2String"
+	        android:textSize="12sp"
+	        android:width="65dp" />
+	    
+	    <ToggleButton
+	        android:id="@+id/powerButton"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="14dp"
+	        android:textOff="@string/powerOnString"
+	        android:textOn="@string/powerOffString"
+	        android:textSize="12sp"
+	        android:width="65dp" />
+
+	</LinearLayout>
+
+	<Button android:id="@+id/sendButton"
+	    	android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:text="@string/setButtonString"/>
+
 </LinearLayout>
 

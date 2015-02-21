@@ -50,6 +50,8 @@ public class ColorPicker extends View {
 	private static final String STATE_ANGLE = "angle";
 	private static final String STATE_OLD_COLOR = "color";
 	private static final String STATE_SHOW_OLD_COLOR = "showColor";
+	public static enum channels {CH1, CH2};
+	private channels activeChannel = channels.CH1;
 
 	/**
 	 * Colors to construct the color wheel using {@link android.graphics.SweepGradient}.
@@ -205,16 +207,6 @@ public class ColorPicker extends View {
 	 */
 	private SVBar mSVbar = null;
 
-	/**
-	 * {@code OpacityBar} instance used to control the Opacity bar.
-	 */
-	private OpacityBar mOpacityBar = null;
-
-	/**
-	 * {@code SaturationBar} instance used to control the Saturation bar.
-	 */
-	private SaturationBar mSaturationBar = null;
-
         /**
          * {@code TouchAnywhereOnColorWheelEnabled} instance used to control <br>
          * if the color wheel accepts input anywhere on the wheel or just <br>
@@ -223,14 +215,10 @@ public class ColorPicker extends View {
         private boolean mTouchAnywhereOnColorWheelEnabled = true;
 
 	/**
-	 * {@code ValueBar} instance used to control the Value bar.
+	 * {@code onColorChangedCh1Listener} instance of the onColorChangedListener
 	 */
-	private ValueBar mValueBar = null;
-
-	/**
-	 * {@code onColorChangedListener} instance of the onColorChangedListener
-	 */
-	private OnColorChangedListener onColorChangedListener;
+	private OnColorChangedListener onColorChangedCh1Listener;
+	private OnColorChangedListener onColorChangedCh2Listener;
 
 	/**
 	 * {@code onColorSelectedListener} instance of the onColorSelectedListener
@@ -273,21 +261,39 @@ public class ColorPicker extends View {
 	}
 
 	/**
-	 * Set a onColorChangedListener
+	 * Set a onColorChangedCh1Listener
 	 * 
 	 * @param {@code OnColorChangedListener}
 	 */
-	public void setOnColorChangedListener(OnColorChangedListener listener) {
-		this.onColorChangedListener = listener;
+	public void setOnColorChangedCh1Listener(OnColorChangedListener listener) {
+		this.onColorChangedCh1Listener = listener;
+	}
+	
+	/**
+	 * Set a onColorChangedCh2Listener
+	 * 
+	 * @param {@code OnColorChangedListener}
+	 */
+	public void setOnColorChangedCh2Listener(OnColorChangedListener listener) {
+		this.onColorChangedCh2Listener = listener;
 	}
 
 	/**
-	 * Gets the onColorChangedListener
+	 * Gets the onColorChangedCh1Listener
 	 * 
 	 * @return {@code OnColorChangedListener}
 	 */
-	public OnColorChangedListener getOnColorChangedListener() {
-		return this.onColorChangedListener;
+	public OnColorChangedListener getOnColorChangedCh1Listener() {
+		return this.onColorChangedCh1Listener;
+	}
+	
+	/**
+	 * Gets the onColorChangedCh2Listener
+	 * 
+	 * @return {@code OnColorChangedListener}
+	 */
+	public OnColorChangedListener getOnColorChangedCh2Listener() {
+		return this.onColorChangedCh2Listener;
 	}
 
 	/**
@@ -311,7 +317,8 @@ public class ColorPicker extends View {
 	/**
 	 * Color of the latest entry of the onColorChangedListener.
 	 */
-	private int oldChangedListenerColor;
+	private int oldChangedCh1ListenerColor;
+	private int oldChangedCh2ListenerColor;
 	
 	/**
 	 * Color of the latest entry of the onColorSelectedListener.
@@ -504,11 +511,20 @@ public class ColorPicker extends View {
 	}
 
 	/**
-	 * Get the currently selected color.
+	 * Get the currently selected Ch1 color.
 	 * 
 	 * @return The ARGB value of the currently selected color.
 	 */
-	public int getColor() {
+	public int getCh1CenterColor() {
+		return mCenterOldColor;
+	}
+	
+	/**
+	 * Get the currently selected Ch2 color.
+	 * 
+	 * @return The ARGB value of the currently selected color.
+	 */
+	public int getCh2CenterColor() {
 		return mCenterNewColor;
 	}
 
@@ -528,12 +544,6 @@ public class ColorPicker extends View {
 		mAngle = colorToAngle(color);
 		mPointerColor.setColor(calculateColor(mAngle));
 
-		// check of the instance isn't null
-		if (mOpacityBar != null) {
-			// set the value of the opacity
-			mOpacityBar.setColor(mColor);
-			mOpacityBar.setOpacity(Color.alpha(color));
-		}
 
 		// check if the instance isn't null
 		if (mSVbar != null) {
@@ -551,20 +561,6 @@ public class ColorPicker extends View {
 			}
 		}
 
-		if (mSaturationBar != null) {
-			Color.colorToHSV(color, mHSV);
-			mSaturationBar.setColor(mColor);
-			mSaturationBar.setSaturation(mHSV[1]);
-		}
-
-		if (mValueBar != null && mSaturationBar == null) {
-			Color.colorToHSV(color, mHSV);
-			mValueBar.setColor(mColor);
-			mValueBar.setValue(mHSV[2]);
-		} else if (mValueBar != null) {
-			Color.colorToHSV(color, mHSV);
-			mValueBar.setValue(mHSV[2]);
-		}
         setNewCenterColor(color);
 	}
 
@@ -613,13 +609,13 @@ public class ColorPicker extends View {
 				setColor(getOldCenterColor());
 				invalidate();
 			}
-                        // Check whether the user pressed anywhere on the wheel.
-                        else if (Math.sqrt(x*x + y*y)  <= mColorWheelRadius + mColorPointerHaloRadius
-                                        && Math.sqrt(x*x + y*y) >= mColorWheelRadius - mColorPointerHaloRadius
-                                        && mTouchAnywhereOnColorWheelEnabled) {
-                                mUserIsMovingPointer = true;
-                                invalidate();
-                        }
+            // Check whether the user pressed anywhere on the wheel.
+            else if (Math.sqrt(x*x + y*y)  <= mColorWheelRadius + mColorPointerHaloRadius
+                            && Math.sqrt(x*x + y*y) >= mColorWheelRadius - mColorPointerHaloRadius
+                            && mTouchAnywhereOnColorWheelEnabled) {
+                    mUserIsMovingPointer = true;
+                    invalidate();
+            }
 			// If user did not press pointer or center, report event not handled
 			else{
 				getParent().requestDisallowInterceptTouchEvent(false);
@@ -631,19 +627,7 @@ public class ColorPicker extends View {
 				mAngle = (float) Math.atan2(y - mSlopY, x - mSlopX);
 				mPointerColor.setColor(calculateColor(mAngle));
 
-				setNewCenterColor(mCenterNewColor = calculateColor(mAngle));
-				
-				if (mOpacityBar != null) {
-					mOpacityBar.setColor(mColor);
-				}
-
-				if (mValueBar != null) {
-					mValueBar.setColor(mColor);
-				}
-
-				if (mSaturationBar != null) {
-					mSaturationBar.setColor(mColor);
-				}
+				setNewCenterColor(calculateColor(mAngle));
 
 				if (mSVbar != null) {
 					mSVbar.setColor(mColor);
@@ -707,30 +691,36 @@ public class ColorPicker extends View {
 		mSVbar.setColorPicker(this);
 		mSVbar.setColor(mColor);
 	}
-
-	/**
-	 * Add a Opacity bar to the color wheel.
-	 * 
-	 * @param bar
-	 *            The instance of the Opacity bar.
-	 */
-	public void addOpacityBar(OpacityBar bar) {
-		mOpacityBar = bar;
-		// Give an instance of the color picker to the Opacity bar.
-		mOpacityBar.setColorPicker(this);
-		mOpacityBar.setColor(mColor);
+	
+	public void setActiveChannel( channels channel) {
+		activeChannel = channel;
 	}
-
-	public void addSaturationBar(SaturationBar bar) {
-		mSaturationBar = bar;
-		mSaturationBar.setColorPicker(this);
-		mSaturationBar.setColor(mColor);
+	
+	public channels getActiveChannel() {
+		return activeChannel;
 	}
-
-	public void addValueBar(ValueBar bar) {
-		mValueBar = bar;
-		mValueBar.setColorPicker(this);
-		mValueBar.setColor(mColor);
+	
+	public int getCenterColor() {
+		if( activeChannel == channels.CH1 ) 
+		{
+			return getCh1CenterColor();
+		}
+		else if( activeChannel == channels.CH2 ) 
+		{
+			return getCh2CenterColor();
+		}
+		return 0;
+	}
+	
+	public void setNewCenterColor(int color) {
+		if( activeChannel == channels.CH1 ) 
+		{
+			setCh1CenterColor( color );
+		}
+		else if( activeChannel == channels.CH2 ) 
+		{
+			setCh2CenterColor( color );
+		}
 	}
 
 	/**
@@ -739,29 +729,33 @@ public class ColorPicker extends View {
 	 * @param color
 	 *            int of the color.
 	 */
-	public void setNewCenterColor(int color) {
+	public void setCh2CenterColor(int color) {
 		mCenterNewColor = color;
 		mCenterNewPaint.setColor(color);
-		if (mCenterOldColor == 0) {
+		/*if (mCenterOldColor == 0) {
 			mCenterOldColor = color;
 			mCenterOldPaint.setColor(color);
-		}
-		if (onColorChangedListener != null && color != oldChangedListenerColor ) {
-			onColorChangedListener.onColorChanged(color);
-			oldChangedListenerColor  = color;
+		}*/
+		if (onColorChangedCh2Listener != null && color != oldChangedCh2ListenerColor ) {
+			onColorChangedCh2Listener.onColorChanged(color);
+			oldChangedCh2ListenerColor  = color;
 		}
 		invalidate();
 	}
 
 	/**
-	 * Change the color of the center which indicates the old color.
+	 * Change the color of the center which indicates the Channel 1 color.
 	 * 
 	 * @param color
 	 *            int of the color.
 	 */
-	public void setOldCenterColor(int color) {
+	public void setCh1CenterColor(int color) {
 		mCenterOldColor = color;
 		mCenterOldPaint.setColor(color);
+		if (onColorChangedCh1Listener != null && color != oldChangedCh1ListenerColor ) {
+			onColorChangedCh1Listener.onColorChanged(color);
+			oldChangedCh1ListenerColor  = color;
+		}
 		invalidate();
 	}
 
@@ -783,70 +777,6 @@ public class ColorPicker extends View {
 		return mShowCenterOldColor;
 	}
 
-	/**
-	 * Used to change the color of the {@code OpacityBar} used by the
-	 * {@code SVBar} if there is an change in color.
-	 * 
-	 * @param color
-	 *            int of the color used to change the opacity bar color.
-	 */
-	public void changeOpacityBarColor(int color) {
-		if (mOpacityBar != null) {
-			mOpacityBar.setColor(color);
-		}
-	}
-
-	/**
-	 * Used to change the color of the {@code SaturationBar}.
-	 * 
-	 * @param color
-	 *            int of the color used to change the opacity bar color.
-	 */
-	public void changeSaturationBarColor(int color) {
-		if (mSaturationBar != null) {
-			mSaturationBar.setColor(color);
-		}
-	}
-
-	/**
-	 * Used to change the color of the {@code ValueBar}.
-	 * 
-	 * @param color
-	 *            int of the color used to change the opacity bar color.
-	 */
-	public void changeValueBarColor(int color) {
-		if (mValueBar != null) {
-			mValueBar.setColor(color);
-		}
-	}
-	
-	/**
-	 * Checks if there is an {@code OpacityBar} connected.
-	 * 
-	 * @return true or false.
-	 */
-	public boolean hasOpacityBar(){
-		return mOpacityBar != null;
-	}
-	
-	/**
-	 * Checks if there is a {@code ValueBar} connected.
-	 * 
-	 * @return true or false.
-	 */
-	public boolean hasValueBar(){
-		return mValueBar != null;
-	}
-	
-	/**
-	 * Checks if there is a {@code SaturationBar} connected.
-	 * 
-	 * @return true or false.
-	 */
-	public boolean hasSaturationBar(){
-		return mSaturationBar != null;
-	}
-	
 	/**
 	 * Checks if there is a {@code SVBar} connected.
 	 * 
@@ -877,7 +807,7 @@ public class ColorPicker extends View {
 		super.onRestoreInstanceState(superState);
 
 		mAngle = savedState.getFloat(STATE_ANGLE);
-		setOldCenterColor(savedState.getInt(STATE_OLD_COLOR));
+		setNewCenterColor(savedState.getInt(STATE_OLD_COLOR));
 		mShowCenterOldColor = savedState.getBoolean(STATE_SHOW_OLD_COLOR);
 		int currentColor = calculateColor(mAngle);
 		mPointerColor.setColor(currentColor);

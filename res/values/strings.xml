@@ -2,24 +2,29 @@
 <resources>
     <string name="select_device">Wybierz urzadzenie</string>
     <string name="app_name">RGBController</string>
-     <string name="bt_not_enabled_leaving">BT nie zostal wlaczony.\nAplikacja zostanie zamknieta.</string>
-     <string name="bt_not_available">Modul BT nie dostepny.</string>
-
-       <string name="title_other_devices">Znalezione urzadzenia:</string>
-        <string name="title_paired_devices">Sparowane urzadzenia:</string>
-        <string name="button_scan">Skanuj</string>
-        <string name="none_paired">Brak sparowanych urzadzen.</string>
+    
+    <string name="bt_not_enabled_leaving">BT nie zostal wlaczony.\nAplikacja zostanie zamknieta.</string>
+    <string name="bt_not_available">Modul BT nie dostepny.</string>
+    <string name="title_other_devices">Znalezione urzadzenia:</string>
+    <string name="title_paired_devices">Sparowane urzadzenia:</string>
+    <string name="button_scan">Skanuj</string>
+    <string name="none_paired">Brak sparowanych urzadzen.</string>
     <string name="scanning">Skanowanie</string>
     <string name="none_found">nie znaleziono</string>
     <string name="unable_to_connect">Nie udalo sie polaczyc z wybranym urzadzeniem.</string>
     <string name="conn_lost">Polaczenie zostalo zerwane</string> 
-    <string name="bitmapSaved">Plik zostal zapisany</string>
     <string name="title_connected_to">Polaczono z : </string> 
     <string name="title_connecting">Trwa laczenie</string>  
     <string name="title_not_connected">Nie polaczony</string>
-    <string name="unable_to_allocate">Alokacja pamieci nie udana</string>
-    <string name="ground">Masa</string>
-
+    
+    <string name="setButtonString">Ustaw</string>
+    <string name="ch1String">CH 1</string>
+    <string name="ch2String">CH 2</string>
+    <string name="powerOnString">Wlacz</string>
+    <string name="powerOffString">Wylacz</string>
+    <string name="rString">  R: </string>
+    <string name="gString">  G: </string>
+    <string name="bString">  B: </string>
 	     
      
 </resources>
