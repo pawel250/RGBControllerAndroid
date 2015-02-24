@@ -151,7 +151,6 @@ containing a value of this type.
         public static final int powerButton=0x7f060010;
         public static final int redTextView=0x7f060009;
         public static final int redValueTextEdit=0x7f06000a;
-        public static final int sendButton=0x7f060011;
         public static final int svbar=0x7f060008;
         public static final int title_left_text=0x7f060000;
         public static final int title_new_devices=0x7f060004;
@@ -179,6 +178,7 @@ containing a value of this type.
         public static final int powerOffString=0x7f050013;
         public static final int powerOnString=0x7f050012;
         public static final int rString=0x7f050014;
+        public static final int rgbControllerName=0x7f050017;
         public static final int scanning=0x7f050008;
         public static final int select_device=0x7f050000;
         public static final int setButtonString=0x7f05000f;

@@ -249,11 +249,7 @@ public class BluetoothSerialService
 	        if (D) Log.d(TAG, "connectionFailed()");
 
 	        // Send a failure message back to the Activity
-	        Message msg = mHandler.obtainMessage(mainActivity.MESSAGE_TOAST);
-	        Bundle bundle = new Bundle();
-	        bundle.putString(mainActivity.TOAST,"Unable to connect device");
-	        msg.setData(bundle);
-	        mHandler.sendMessage(msg);
+	        mHandler.obtainMessage(mainActivity.MESSAGE_TOAST_RINT, R.string.unable_to_connect, -1).sendToTarget();
 	    }
 
 	    /**
@@ -265,11 +261,7 @@ public class BluetoothSerialService
 	        if(D) Log.i(TAG, "connectionLost()");
             
 	        // Send a failure message back to the Activity
-	       Message msg = mHandler.obtainMessage(mainActivity.MESSAGE_TOAST);
-	        Bundle bundle = new Bundle();
-	        bundle.putString(mainActivity.TOAST, "Connection Lost");
-	        msg.setData(bundle);
-	        mHandler.sendMessage(msg);
+	        mHandler.obtainMessage(mainActivity.MESSAGE_TOAST_RINT, R.string.conn_lost, -1).sendToTarget();
 	    }
 	    
 	    public synchronized void connected(BluetoothSocket socket, BluetoothDevice device)

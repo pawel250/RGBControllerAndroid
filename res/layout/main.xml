@@ -17,6 +17,9 @@
 	<LinearLayout
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
+	    android:layout_gravity="center"
+	    android:layout_margin="10dp"
+	    android:gravity="center"
 	    android:orientation="horizontal" >
 	    
 	    <TextView
@@ -53,36 +56,39 @@
 	        android:id="@+id/blueValueTextEdit"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
 	        android:inputType="numberDecimal"
 	        android:maxWidth="50sp"
 	        android:minWidth="50sp" />
-	    
-	    <ToggleButton
-	        android:id="@+id/ch1Button"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:paddingTop="14dp"
-	        android:textOff="@string/ch1String"
-	        android:textOn="@string/ch2String"
-	        android:textSize="12sp"
-	        android:width="65dp" />
-	    
-	    <ToggleButton
-	        android:id="@+id/powerButton"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:paddingTop="14dp"
-	        android:textOff="@string/powerOnString"
-	        android:textOn="@string/powerOffString"
-	        android:textSize="12sp"
-	        android:width="65dp" />
 
 	</LinearLayout>
+	
+ 	<LinearLayout
+ 	    android:layout_width="fill_parent"
+ 	    android:layout_height="wrap_content"
+ 	    android:layout_gravity="center"
+ 	    android:gravity="center"
+ 	    android:orientation="horizontal" >
 
-	<Button android:id="@+id/sendButton"
-	    	android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"
-	        android:text="@string/setButtonString"/>
+ 	    <ToggleButton
+ 	        android:id="@+id/ch1Button"
+ 	        android:layout_width="0dp"
+ 	        android:layout_height="wrap_content"
+ 	        android:layout_weight="0.5"
+ 	        android:textOff="@string/ch1String"
+ 	        android:textOn="@string/ch2String"
+ 	        android:textSize="12sp"/>
+
+ 	    <ToggleButton
+ 	        android:id="@+id/powerButton"
+ 	        android:layout_width="0dp"
+ 	        android:layout_height="wrap_content"
+ 	        android:layout_weight="0.5"
+ 	        android:textOff="@string/powerOnString"
+ 	        android:textOn="@string/powerOffString"
+ 	        android:textSize="12sp"/>
+
+ 	</LinearLayout>
 
 </LinearLayout>
 

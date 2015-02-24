@@ -34,6 +34,8 @@ public class DeviceListActivity extends Activity
     private BluetoothAdapter mBtAdapter;
     private ArrayAdapter<String> mPairedDevicesArrayAdapter;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
+    
+    private String rgbControllerName = null;
 
     /** Called when the activity is first created. */
     @Override
@@ -89,7 +91,21 @@ public class DeviceListActivity extends Activity
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
             findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
-            for (BluetoothDevice device : pairedDevices) {
+            rgbControllerName = getText(R.string.rgbControllerName).toString();
+            for (BluetoothDevice device : pairedDevices) 
+            {
+            	Log.d(TAG, "for: " + device.getName() +" addr: "+device.getAddress());
+            	if (device.getName().equals(rgbControllerName) )
+            	{
+            		Log.d(TAG, "Found rgbcontroller");
+            		 // Create the result Intent and include the MAC address
+                    Intent intent = new Intent();
+                    intent.putExtra(EXTRA_DEVICE_ADDRESS, device.getAddress() );
+
+                    // Set result and finish this Activity
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
+            	}
                 mPairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
             }
         } else {

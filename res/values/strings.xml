@@ -25,6 +25,8 @@
     <string name="rString">  R: </string>
     <string name="gString">  G: </string>
     <string name="bString">  B: </string>
+    
+    <string name="rgbControllerName">ARMscope</string>
 	     
      
 </resources>

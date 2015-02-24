@@ -21,7 +21,6 @@ import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ToggleButton;
 
-import com.del.android.scope.R;
 import com.larswerkman.holocolorpicker.*;
 import com.larswerkman.holocolorpicker.ColorPicker.OnColorChangedListener;
 import com.larswerkman.holocolorpicker.ColorPicker.channels;
@@ -31,7 +30,7 @@ public class mainActivity extends Activity
 {
 	//Debugging
 	private static final String TAG = "RGBController";
-	private static final boolean D = true;
+	private static final boolean D = false;
 	
     // Layout Views
     private TextView mTitle;
@@ -41,7 +40,7 @@ public class mainActivity extends Activity
     EditText redEditText;
     EditText greenEditText;
     EditText blueEditText;
-    Button sendButton;
+    //Button sendButton;
     ToggleButton powerButton;
     
     private BluetoothAdapter mBluetoothAdapter = null;
@@ -92,6 +91,7 @@ public class mainActivity extends Activity
 		}
 		
         powerButton = (ToggleButton) findViewById(R.id.powerButton);
+        powerButton.setOnClickListener(powerButtonListener);
         
         redEditText = (EditText) findViewById(R.id.redValueTextEdit);
         redEditText.setOnEditorActionListener(redEditTextListener);
@@ -102,8 +102,8 @@ public class mainActivity extends Activity
         blueEditText = (EditText) findViewById(R.id.blueValueTextEdit);
         blueEditText.setOnEditorActionListener(blueEditTextListener);
    
-        sendButton = (Button) findViewById(R.id.sendButton);
-        sendButton.setOnClickListener(sendButtonListener);
+        /*sendButton = (Button) findViewById(R.id.sendButton);
+        sendButton.setOnClickListener(sendButtonListener);*/
         
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -119,12 +119,23 @@ public class mainActivity extends Activity
         if(D) Log.e(TAG, "-- ON CREATE --");
     }
     
+    private void sendColorToArm()
+    {
+    	buildTxFrame();
+		searchAndConnect();
+    	if(mConnectedDeviceName!=null) mBTSerialService.write(buff);
+    	else  Toast.makeText(getApplicationContext(), R.string.title_not_connected,Toast.LENGTH_SHORT).show();
+    }
+    
     public class OnColorChangedCh1Class implements OnColorChangedListener
     {
     	public void onColorChanged(int color)
 		{    		
-    		Log.e( TAG, "1:"+ Color.red( color ) + "x"+ Color.green( color ) + "x"+ Color.blue( color ) /*+ ""+ Color.alpha( color ) */);
+    		if(D) Log.e( TAG, "1:"+ Color.red( color ) + "x"+ Color.green( color ) + "x"+ Color.blue( color ) /*+ ""+ Color.alpha( color ) */);
+    		
     		updateColorEditText(color);
+    		
+    		sendColorToArm();
 		}
     }
     OnColorChangedCh1Class OnColorChangedCh1 = new OnColorChangedCh1Class();
@@ -133,9 +144,10 @@ public class mainActivity extends Activity
     {
     	public void onColorChanged(int color)
 		{    		
-			Log.e( TAG, "2:"+ Color.red( color ) + "x"+ Color.green( color ) + "x"+ Color.blue( color ) /*+ ""+ Color.alpha( color ) */);
+    		if(D) Log.e( TAG, "2:"+ Color.red( color ) + "x"+ Color.green( color ) + "x"+ Color.blue( color ) /*+ ""+ Color.alpha( color ) */);
 			updateColorEditText(color);
-    		
+			
+			sendColorToArm();
 		}
     }
     OnColorChangedCh2Class OnColorChangedCh2 = new OnColorChangedCh2Class();
@@ -147,6 +159,16 @@ public class mainActivity extends Activity
     	greenEditText.setText( String.valueOf( Color.green(pickedColor) ) );
     	blueEditText.setText( String.valueOf( Color.blue(pickedColor) ) );
     }
+    
+    private OnClickListener powerButtonListener = new OnClickListener()
+   	{
+   		public void onClick(View arg0) 
+   		{
+   			ToggleButton powerButton = (ToggleButton) arg0;
+   			if(D) Log.d(TAG,"powerButtonListener"+ powerButton.isChecked());
+			sendColorToArm();
+   		}
+   	};
     
     private OnClickListener ch1ButtonListener = new OnClickListener()
 	{
@@ -192,6 +214,8 @@ public class mainActivity extends Activity
 				 redEditText.setText("0");
 			 }
 			 picker.setColor( Color.rgb( modifiedCol, Color.green(centerCol), Color.blue(centerCol)));
+			 
+			 sendColorToArm();
 			return true;
 		}
 	};
@@ -213,6 +237,7 @@ public class mainActivity extends Activity
 				 greenEditText.setText("0");
 			 }
 			 picker.setColor( Color.rgb( Color.red(centerCol), modifiedCol, Color.blue(centerCol)));
+			sendColorToArm();
 			return true;
 		}
 	};
@@ -234,6 +259,7 @@ public class mainActivity extends Activity
 				 blueEditText.setText("0");
 			 }
 			 picker.setColor( Color.rgb( Color.red(centerCol), Color.green(centerCol), modifiedCol));
+			sendColorToArm();
 			return true;
 		}
 	};
@@ -264,7 +290,7 @@ public class mainActivity extends Activity
 		buff[7] = FRAME_END_MARKER;
 	}
 	
-	private OnClickListener sendButtonListener = new OnClickListener()
+/*	private OnClickListener sendButtonListener = new OnClickListener()
 	{
 		public void onClick(View arg0)
 		{
@@ -279,12 +305,13 @@ public class mainActivity extends Activity
 					Log.d(TAG, i+": "+buff[i] );
 			}
 		}
-	};
+	};*/
 	
 	public static final int MESSAGE_STATE_CHANGE = 1;
 	public static final int MESSAGE_READ = 2;
     public static final int MESSAGE_DEVICE_NAME = 4;
-	public static final int MESSAGE_TOAST = 5;
+	public static final int MESSAGE_TOAST_RINT = 5;
+	public static final int MESSAGE_TOAST_STRING = 6;
 
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
@@ -312,6 +339,7 @@ public class mainActivity extends Activity
                     break;
                 case BluetoothSerialService.STATE_NONE:
                     mTitle.setText(R.string.title_not_connected);
+                    mConnectedDeviceName = null;
                     break;
                 }
                 break;
@@ -321,23 +349,17 @@ public class mainActivity extends Activity
                 Toast.makeText(getApplicationContext(),getText(R.string.title_connected_to)
                 		+ mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                 break;
-            case MESSAGE_TOAST:
+            case MESSAGE_TOAST_STRING:
                 Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
+                               Toast.LENGTH_SHORT).show();
+                break;
+            case MESSAGE_TOAST_RINT:
+                Toast.makeText(getApplicationContext(), getText( msg.arg1 ).toString(),
                                Toast.LENGTH_SHORT).show();
                 break;
             }
         }
     };
-    
-    private void setup()
-    {
-        Log.d(TAG, "setup()");
-        // Initialize the BluetoothChatService to perform bluetooth connections
-        mBTSerialService = new BluetoothSerialService(this, mHandler);     
-        
-        Intent serverIntent = new Intent(this, DeviceListActivity.class);
-        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
-    }
     
 	// Intent request codes
     private static final int REQUEST_CONNECT_DEVICE = 1;
@@ -360,13 +382,8 @@ public class mainActivity extends Activity
                 mBTSerialService.connect(device);
             }
             break;
-        case REQUEST_ENABLE_BT:
-            // When the request to enable Bluetooth returns
-            if (resultCode == Activity.RESULT_OK)
-            { 
-                setup();
-            } 
-            else 
+        case REQUEST_ENABLE_BT: // When the request to enable Bluetooth returns
+            if (resultCode != Activity.RESULT_OK)
             {// User did not enable Bluetooth or an error occured
                 Log.d(TAG, "BT not enabled");
                 Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_LONG).show();
@@ -374,7 +391,15 @@ public class mainActivity extends Activity
             }
         }
     }
-    
+    public void searchAndConnect()
+    {
+    	if(mConnectedDeviceName == null) 
+        {
+    		Intent serverIntent = new Intent(this, DeviceListActivity.class);
+    		startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+        }
+    }
+
     public void onStart()
     {
         super.onStart();
@@ -384,14 +409,17 @@ public class mainActivity extends Activity
         {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-        // Otherwise, setup the session
         } 
-        else
-        {
-           if (mBTSerialService == null) setup();
-        }
-    }
 
+        if (mBTSerialService == null)
+    	{
+        	Log.d(TAG, "BT setup");
+            // Initialize the BluetoothChatService to perform bluetooth connections
+            mBTSerialService = new BluetoothSerialService(this, mHandler);
+    	}
+        
+        searchAndConnect();
+    }
     
     @Override
     public synchronized void onPause() {
@@ -402,6 +430,7 @@ public class mainActivity extends Activity
     @Override
     public void onStop() {
         super.onStop();
+        
         if (mBTSerialService != null) mBTSerialService.stop();
         if(D) Log.e(TAG, "-- ON STOP --");
     }
@@ -410,7 +439,7 @@ public class mainActivity extends Activity
     public void onDestroy() {
         super.onDestroy();
         // Stop the Bluetooth chat services
-       
+        if (mBTSerialService != null) mBTSerialService.stop();
         if(D) Log.e(TAG, "--- ON DESTROY ---");
     }     
 }
