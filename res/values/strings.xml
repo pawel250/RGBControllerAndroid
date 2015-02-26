@@ -22,11 +22,13 @@
     <string name="ch2String">CH 2</string>
     <string name="powerOnString">Wlacz</string>
     <string name="powerOffString">Wylacz</string>
+    <string name="autoColorOnString">Auto kolor</string>
+    <string name="autoColorOffString">Auto kolor</string>
     <string name="rString">  R: </string>
     <string name="gString">  G: </string>
     <string name="bString">  B: </string>
     
-    <string name="rgbControllerName">ARMscope</string>
+    <string name="rgbControllerName">RGBController</string>
 	     
      
 </resources>

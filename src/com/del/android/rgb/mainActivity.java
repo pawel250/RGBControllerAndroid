@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +41,11 @@ public class mainActivity extends Activity
     EditText blueEditText;
     //Button sendButton;
     ToggleButton powerButton;
+    private byte powerOn = 1;
+    private final byte POWER_ON_CONF_BIT = 0;
+    private final byte AUTO_COLOR_CONF_BIT = 1;
+    
+    ToggleButton autoColorButton;
     
     private BluetoothAdapter mBluetoothAdapter = null;
  // Member object for the BT services
@@ -90,6 +94,9 @@ public class mainActivity extends Activity
 			ch1Button.setText( R.string.ch2String );
 		}
 		
+		autoColorButton = (ToggleButton) findViewById(R.id.autoColorButton);
+		autoColorButton.setOnClickListener(autoColorButtonListener);
+		
         powerButton = (ToggleButton) findViewById(R.id.powerButton);
         powerButton.setOnClickListener(powerButtonListener);
         
@@ -122,9 +129,8 @@ public class mainActivity extends Activity
     private void sendColorToArm()
     {
     	buildTxFrame();
-		searchAndConnect();
+		//searchAndConnect();
     	if(mConnectedDeviceName!=null) mBTSerialService.write(buff);
-    	else  Toast.makeText(getApplicationContext(), R.string.title_not_connected,Toast.LENGTH_SHORT).show();
     }
     
     public class OnColorChangedCh1Class implements OnColorChangedListener
@@ -166,7 +172,29 @@ public class mainActivity extends Activity
    		{
    			ToggleButton powerButton = (ToggleButton) arg0;
    			if(D) Log.d(TAG,"powerButtonListener"+ powerButton.isChecked());
-			sendColorToArm();
+	   		searchAndConnect();
+   			if( powerButton.isChecked() )
+   			{
+   				powerOn = 1;
+   		   		sendColorToArm();
+   			}
+   			else
+   			{
+   				powerOn = 0;  	   
+   		   		sendColorToArm();
+   		        if (mBTSerialService != null) mBTSerialService.stop();
+   			}
+
+   		}
+   	};
+   	
+   	private OnClickListener autoColorButtonListener = new OnClickListener()
+   	{
+   		public void onClick(View arg0) 
+   		{
+   			if(D) Log.d(TAG,"autoColorButtonListener"+ autoColorButton.isChecked());
+	   		sendColorToArm();
+
    		}
    	};
     
@@ -264,7 +292,7 @@ public class mainActivity extends Activity
 		}
 	};
 	
-	private final int FRAME_SIZE = 8;
+	private final int FRAME_SIZE = 9;
 	private byte buff[] = new byte[FRAME_SIZE];
 	private final byte FRAME_START_MARKER = 1;
 	private final byte FRAME_END_MARKER = FRAME_START_MARKER + 2;
@@ -274,12 +302,6 @@ public class mainActivity extends Activity
 		int ch1Color = picker.getCh1CenterColor();
 		int ch2Color = picker.getCh2CenterColor();
 		
-		if( ! powerButton.isChecked() )
-		{
-			ch1Color = 0;
-			ch2Color = 0;
-		}
-		
 		buff[0] = FRAME_START_MARKER;
 		buff[1] = (byte) Color.red( ch1Color );
 		buff[2] = (byte) Color.green( ch1Color );
@@ -287,7 +309,10 @@ public class mainActivity extends Activity
 		buff[4] = (byte) Color.red( ch2Color );
 		buff[5] = (byte) Color.green( ch2Color );
 		buff[6] = (byte) Color.blue( ch2Color );
-		buff[7] = FRAME_END_MARKER;
+		buff[7] = 0;
+		buff[7] = (byte) (powerOn << POWER_ON_CONF_BIT);
+		buff[7] |= autoColorButton.isChecked() ? 1 << AUTO_COLOR_CONF_BIT : 0;
+		buff[8] = FRAME_END_MARKER;
 	}
 	
 /*	private OnClickListener sendButtonListener = new OnClickListener()
@@ -385,7 +410,7 @@ public class mainActivity extends Activity
         case REQUEST_ENABLE_BT: // When the request to enable Bluetooth returns
             if (resultCode != Activity.RESULT_OK)
             {// User did not enable Bluetooth or an error occured
-                Log.d(TAG, "BT not enabled");
+                if(D) Log.d(TAG, "BT not enabled");
                 Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_LONG).show();
                 finish();
             }
@@ -393,7 +418,7 @@ public class mainActivity extends Activity
     }
     public void searchAndConnect()
     {
-    	if(mConnectedDeviceName == null) 
+    	if( mConnectedDeviceName == null && powerButton.isChecked()) 
         {
     		Intent serverIntent = new Intent(this, DeviceListActivity.class);
     		startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
@@ -413,7 +438,7 @@ public class mainActivity extends Activity
 
         if (mBTSerialService == null)
     	{
-        	Log.d(TAG, "BT setup");
+        	if(D) Log.d(TAG, "BT setup");
             // Initialize the BluetoothChatService to perform bluetooth connections
             mBTSerialService = new BluetoothSerialService(this, mHandler);
     	}

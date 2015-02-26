@@ -139,6 +139,7 @@ containing a value of this type.
         public static final int icon=0x7f020001;
     }
     public static final class id {
+        public static final int autoColorButton=0x7f060011;
         public static final int blueTextView=0x7f06000d;
         public static final int blueValueTextEdit=0x7f06000e;
         public static final int button_scan=0x7f060006;
@@ -165,20 +166,22 @@ containing a value of this type.
     }
     public static final class string {
         public static final int app_name=0x7f050001;
-        public static final int bString=0x7f050016;
+        public static final int autoColorOffString=0x7f050015;
+        public static final int autoColorOnString=0x7f050014;
+        public static final int bString=0x7f050018;
         public static final int bt_not_available=0x7f050003;
         public static final int bt_not_enabled_leaving=0x7f050002;
         public static final int button_scan=0x7f050006;
         public static final int ch1String=0x7f050010;
         public static final int ch2String=0x7f050011;
         public static final int conn_lost=0x7f05000b;
-        public static final int gString=0x7f050015;
+        public static final int gString=0x7f050017;
         public static final int none_found=0x7f050009;
         public static final int none_paired=0x7f050007;
         public static final int powerOffString=0x7f050013;
         public static final int powerOnString=0x7f050012;
-        public static final int rString=0x7f050014;
-        public static final int rgbControllerName=0x7f050017;
+        public static final int rString=0x7f050016;
+        public static final int rgbControllerName=0x7f050019;
         public static final int scanning=0x7f050008;
         public static final int select_device=0x7f050000;
         public static final int setButtonString=0x7f05000f;
