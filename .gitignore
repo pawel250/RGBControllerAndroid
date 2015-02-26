@@ -1,0 +1,11 @@
+.cproject
+.project
+.settings
+.gitignore
+bin/*
+./bin
+./bin/*
+bin
+./gen
+./gen/*
+
